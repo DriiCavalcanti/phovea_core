@@ -51,7 +51,12 @@
   },
   "dependencies": {
     "tslib": "1.5.0",
-    "@types/whatwg-fetch": "0.0.33"
+    "@types/whatwg-fetch": "0.0.33",
+    "virtual-dom": "2.1.1",
+    "@types/virtual-dom": "2.0.27",
+    "vtree-select": "2.1.0",
+    "virtual-dom-patch-viewer": "0.1.7",
+    "vdom-as-json": "1.0.11"
   },
   "devDependencies": {
     "@types/jasmine": "2.5.41",
