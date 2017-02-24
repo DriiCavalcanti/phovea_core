@@ -4,6 +4,8 @@
 import {GraphNode, isType} from '../graph/graph';
 import ActionNode from './ActionNode';
 import ObjectNode from './ObjectNode';
+import {diff, VNode} from 'virtual-dom';
+import VPatch = VirtualDOM.VPatch;
 
 /**
  * a state node is one state in the visual exploration consisting of an action creating it and one or more following ones.
@@ -14,6 +16,23 @@ export default class StateNode extends GraphNode {
     super('state');
     super.setAttr('name', name);
     super.setAttr('description', description);
+  }
+
+  get stateTokenTree():VNode {
+    let tokenTree:VNode = this.getAttr('stateTokenTree', null);
+    // cache the tokenTree
+    if (tokenTree === null) {
+      // use first element and assume that only the application returns a `stateTokenTree`
+      tokenTree = this.consistsOf
+        .map((objectNode) => objectNode.stateTokenTree)
+        .filter((d) => d !== null && d !== undefined)[0];
+      this.setAttr('stateTokenTree', tokenTree);
+    }
+    return tokenTree;
+  }
+
+  getSimilarityTo(other:StateNode):VPatch[] {
+    return diff(other.stateTokenTree, this.stateTokenTree);
   }
 
   get name(): string {

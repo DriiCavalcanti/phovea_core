@@ -140,6 +140,13 @@ export default class ObjectNode<T> extends GraphNode implements IObjectRef<T> {
     super.setAttr('description', description);
   }
 
+  get stateTokenTree() {
+    if(this.value) {
+      return (<any>this.value).stateTokenTree;
+    }
+    return null;
+  }
+
   get value() {
     this.checkPersisted();
     return this._v;
