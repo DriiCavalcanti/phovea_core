@@ -634,8 +634,8 @@ export default class ProvenanceGraph extends ADataType<IProvenanceGraphDataDescr
       this.addEdge(action, 'resultsIn', next);
     }
     this.fire('execute', action);
-    if (hash.is('debug')) {
-      console.log('execute ' + action.meta + ' ' + action.f_id);
+    if (hash.has('debug')) {
+      console.log('execute ', action.f_id, action.meta);
     }
     this.currentlyRunning = true;
 
