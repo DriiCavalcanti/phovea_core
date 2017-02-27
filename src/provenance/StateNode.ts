@@ -21,6 +21,10 @@ export default class StateNode extends GraphNode {
     super.setAttr('description', description);
   }
 
+  /**
+   * Returns the application state token tree. If no tree exists in the cache, it creates an instance.
+   * @returns {VNode}
+   */
   get stateTokenTree():VNode {
     // use object cache if already defined
     if(this._stateTokenTree) {
@@ -44,6 +48,19 @@ export default class StateNode extends GraphNode {
     return this._stateTokenTree;
   }
 
+  /**
+   * Checks if the cache contains already the token tree
+   * @returns {boolean}
+   */
+  hasCachedStateTokenTree():boolean {
+    return (this._stateTokenTree !== null || this._stateTokenTree !== undefined);
+  }
+
+  /**
+   * Compares the token tree of the current state with a token tree from a different state.
+   * @param other
+   * @returns {VPatch[]}
+   */
   getSimilarityTo(other:StateNode):VPatch[] {
     return diff(other.stateTokenTree, this.stateTokenTree);
   }
