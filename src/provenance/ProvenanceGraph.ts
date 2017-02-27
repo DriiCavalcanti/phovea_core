@@ -253,6 +253,13 @@ export default class ProvenanceGraph extends ADataType<IProvenanceGraphDataDescr
       this._slides = <any>this.backend.nodes.filter((n) => (n instanceof SlideNode));
       this.act = <StateNode>(act >= 0 ? this.getStateById(act) : this._states[0]);
     }
+
+    this.on('switch_state', (evt, state:StateNode) => {
+      // IMPORTANT:
+      // this line creates the token tree cache for the current state
+      // (and the previous if does not exist)
+      state.getSimilarityTo(state.previousState);
+    });
   }
 
   get isEmpty() {
