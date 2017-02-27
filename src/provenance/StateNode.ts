@@ -5,6 +5,7 @@ import {GraphNode, isType} from '../graph/graph';
 import ActionNode from './ActionNode';
 import ObjectNode from './ObjectNode';
 import {diff, VNode} from 'virtual-dom';
+import * as vdomAsJson from 'vdom-as-json';
 import VPatch = VirtualDOM.VPatch;
 
 /**
@@ -12,6 +13,8 @@ import VPatch = VirtualDOM.VPatch;
  * In addition, a state is characterized by the set of active object nodes
  */
 export default class StateNode extends GraphNode {
+  private _stateTokenTree:VNode;
+
   constructor(name: string, description = '') {
     super('state');
     super.setAttr('name', name);
@@ -19,16 +22,26 @@ export default class StateNode extends GraphNode {
   }
 
   get stateTokenTree():VNode {
-    let tokenTree:VNode = this.getAttr('stateTokenTree', null);
-    // cache the tokenTree
-    if (tokenTree === null) {
-      // use first element and assume that only the application returns a `stateTokenTree`
-      tokenTree = this.consistsOf
-        .map((objectNode) => objectNode.stateTokenTree)
-        .filter((d) => d !== null && d !== undefined)[0];
-      this.setAttr('stateTokenTree', tokenTree);
+    // use object cache if already defined
+    if(this._stateTokenTree) {
+      return this._stateTokenTree;
     }
-    return tokenTree;
+
+    // otherwise use try to use sessionStorage and decode json
+    const jsonTokenTree:Object = this.getAttr('stateTokenTree', null);
+
+    if(jsonTokenTree) {
+      this._stateTokenTree = vdomAsJson.fromJson(jsonTokenTree);
+
+    } else {
+      // use first element and assume that only the application returns a full `stateTokenTree`
+      this._stateTokenTree = this.consistsOf
+        .map((objectNode) => objectNode.stateTokenTree)
+        .filter((d) => d !== null && d !== undefined)[0]; // note the [0]
+      this.setAttr('stateTokenTree', vdomAsJson.toJson(this._stateTokenTree));
+    }
+
+    return this._stateTokenTree;
   }
 
   getSimilarityTo(other:StateNode):VPatch[] {
