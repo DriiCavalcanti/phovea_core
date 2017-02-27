@@ -6,6 +6,7 @@ import ActionNode from './ActionNode';
 import ObjectNode from './ObjectNode';
 import {diff, VNode} from 'virtual-dom';
 import * as vdomAsJson from 'vdom-as-json';
+//import * as patchView from 'virtual-dom-patch-viewer';
 import VPatch = VirtualDOM.VPatch;
 
 /**
@@ -59,10 +60,24 @@ export default class StateNode extends GraphNode {
   /**
    * Compares the token tree of the current state with a token tree from a different state.
    * @param other
-   * @returns {VPatch[]}
+   * @returns {number}
    */
-  getSimilarityTo(other:StateNode):VPatch[] {
-    return diff(other.stateTokenTree, this.stateTokenTree);
+  getSimilarityTo(other:StateNode):number {
+    if(!other.hasCachedStateTokenTree()) {
+      // compare only if state token tree is cached
+      return -1;
+
+    } else if(this === other) {
+      // exclude comparing to self
+      return 0;
+    }
+
+    const patch = diff(other.stateTokenTree, this.stateTokenTree);
+    const numCanges = Object.keys(patch).filter((k) => k !== 'a').length;
+    /*console.groupCollapsed(`compare ${this.name} to ${other.name} --> ${numCanges}`);
+    patchView(patch);
+    console.groupEnd();*/
+    return numCanges;
   }
 
   get name(): string {
